@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Find Cafés Near You</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .container {
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+                  rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    }
+    #play-icon:hover {
+      transform: scale(1.1);
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+
+  <div class="min-h-screen flex items-center justify-center px-4 py-10">
+    <div class="container bg-white rounded-2xl p-6 max-w-lg w-full grid gap-6">
+
+      
+      <div class="flex justify-center">
+        <img
+          id="play-icon"
+          src="https://img.icons8.com/?size=100&id=I9MwnfvET8MG&format=png&color=000000"
+          alt="Play Icon"
+          class="w-20 cursor-pointer"
+        />
+      </div>
+
+      <div class="text-center">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Find Great Cafés Near You</h1>
+        <p class="text-gray-600 leading-relaxed">
+          We'll use your location to show you the best coffee shops and cafés nearby.
+        </p>
+      </div>
+
+      
+      <div id="error-box" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm">
+        <span class="font-bold flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-circle w-5 h-5 text-red-600 mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+            Location Error:</span>
+        <span class="block mt-1">
+          Location access was denied. Please enable location permissions in your browser settings and refresh the page.
+        </span>
+        <ul class="list-disc ml-5 mt-2 text-xs">
+          <li>Click the location icon in your browser's address bar</li>
+          <li>Select "Allow" for location permissions</li>
+          <li>Refresh the page and try again</li>
+        </ul>
+      </div>
+
+      
+      <div>
+        <button
+          id="location-btn"
+          onclick="getUserLocation()"
+          class="w-full bg-gradient-to-r from-amber-600 to-blue-600 hover:from-amber-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-xl transform hover:-translate-y-0.5"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+          </svg>
+          Share My Location
+        </button>
+        <p class="text-xs text-gray-500 mt-2 text-center">
+          Your location is only used to find nearby cafés and is not stored.
+        </p>
+      </div>
+
+   
+      <div id="help-section">
+        <h3 class="font-medium mb-1 text-gray-800">Having trouble?</h3>
+        <ul class="text-left space-y-1 text-sm text-gray-600 list-disc list-inside">
+          <li>Make sure location services are enabled on your device</li>
+          <li>Check that your browser has location permissions</li>
+          <li>Ensure you have a stable internet connection</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function getUserLocation() {
+      const errorBox = document.getElementById('error-box');
+      const helpSection = document.getElementById('help-section');
+      const button = document.getElementById('location-btn');
+
+      
+      errorBox.classList.add('hidden');
+      helpSection.classList.remove('hidden');
+      button.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+        </svg>
+        Loading...
+      `;
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+           
+            window.location.href = `http://localhost:5500/coffe.html`;
+          },
+          (error) => {
+            errorBox.classList.remove('hidden');
+            helpSection.classList.add('hidden'); 
+            button.innerHTML = `
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw w-5 h-5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>
+              Try Again
+            `;
+          }
+        );
+      } else {
+        errorBox.classList.remove('hidden');
+        errorBox.innerHTML = `<strong class="font-bold">Geolocation not supported:</strong> Your browser doesn't support geolocation.`;
+        helpSection.classList.add('hidden');
+        button.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+          </svg>
+          Try Again
+        `;
+      }
+    }
+  </script>
+
+</body>
+</html>
