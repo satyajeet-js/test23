@@ -84,51 +84,63 @@
 
   <script>
     function getUserLocation() {
-      const errorBox = document.getElementById('error-box');
-      const helpSection = document.getElementById('help-section');
-      const button = document.getElementById('location-btn');
+  const errorBox = document.getElementById('error-box');
+  const helpSection = document.getElementById('help-section');
+  const button = document.getElementById('location-btn');
 
-      
-      errorBox.classList.add('hidden');
-      helpSection.classList.remove('hidden');
-      button.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
-        </svg>
-        Loading...
-      `;
+  errorBox.classList.add('hidden');
+  helpSection.classList.remove('hidden');
+  button.innerHTML = `
+    <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+    </svg>
+    Loading...
+  `;
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+ window.location.href = `http://localhost:5500/coffe.html`;
 
-           
-            window.location.href = `http://localhost:5500/coffe.html`;
-          },
-          (error) => {
-            errorBox.classList.remove('hidden');
-            helpSection.classList.add('hidden'); 
-            button.innerHTML = `
-           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw w-5 h-5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>
-              Try Again
-            `;
-          }
-        );
-      } else {
+      },
+      (error) => {
+        let errorMessage = '';
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Permission denied. Please allow location access.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "Location unavailable.";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "Request timed out.";
+            break;
+          default:
+            errorMessage = "An unknown error occurred.";
+        }
         errorBox.classList.remove('hidden');
-        errorBox.innerHTML = `<strong class="font-bold">Geolocation not supported:</strong> Your browser doesn't support geolocation.`;
+        errorBox.innerHTML = `<strong class="font-bold">Error:</strong> ${errorMessage}`;
         helpSection.classList.add('hidden');
         button.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" ... class="w-5 h-5">...</svg>
           Try Again
         `;
       }
-    }
-  </script>
+    );
+  } else {
+    errorBox.classList.remove('hidden');
+    errorBox.innerHTML = `<strong class="font-bold">Geolocation not supported:</strong> Your browser doesn't support geolocation.`;
+    helpSection.classList.add('hidden');
+    button.innerHTML = `
+      <svg class="w-5 h-5" ...>...</svg>
+      Try Again
+    `;
+  }
+}
 
+  </script>
 </body>
 </html>
